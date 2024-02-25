@@ -10,19 +10,28 @@
 -- (and watch out cpu actually)
 
 engine.name = 'Nameless_Nightmare'
-UI = require "ui"
 fileselect = require 'fileselect'
+util = require 'util'
 NamelessNightmare = include("nameless-nightmare/lib/NamelessNightmare_engine")
 
-local pages
-local tabs
-local tab_titles = {"Mercury", "Venus", "Earth", "Mars", "Jupiter", "Saturn", "Uranus", "Neptune", "PlanetX"}
+local the_engine = 1
+local engines = {"Mercury", "Venus", "Earth", "Mars", "Jupiter", "Saturn", "Uranus", "Neptune", "PlanetX"}
+local engines_low = {"mercury", "venus", "earth", "mars", "jupiter", "saturn", "uranus", "neptune", "planetx"}
+local launch_state = {["mercury"] = false, ["venus"] = false, ["earth"] = false, ["mars"] = false, ["jupiter"] = false, ["saturn"] = false, ["uranus"] = false, ["neptune"] = false, ["planetx"] = false}
+local launch_engine = {engine.mercuryGate, engine.venusGate, engine.earthGate, engine.marsGate, engine.jupiterGate, engine.saturnGate, engine.uranusGate, engine.neptuneGate, engine.planetxGate}
+local num_engines = 9
+local pow_select = 1
+local pow_name = "self"
+local pow_100 = 80.0
+
+local engine_name = "Mercury"
+local engine_low_name = "mercury"
+local pow_list = {"self", "Vulcan"}
+local num_pows = 2
 
 local file_exists = 0
 local selecting = false
 local length = 0.0
-
-local gate_on = false
 
 
 
@@ -36,6 +45,7 @@ function load_file(file)
         engine.read(file)
         file_exists = 1
         print_info(file)
+        redraw()
     end
 end
 
@@ -51,6 +61,12 @@ function print_info(file)
     else print "read_wav(): file not found" end
 end
 
+-- engine launch
+function launch(i)
+    local engine_gate = launch_engine[i]
+    launch_state[engines_low[i]] = not launch_state[engines_low[i]]
+    engine_gate("1")
+end
 
 -- controls
 
@@ -60,41 +76,66 @@ function key(n,z)
         fileselect.enter(_path.dust,load_file)
     elseif n == 2 and z == 1 then
     elseif n == 3 and z == 1 then
-        if gate_on then
-            engine.mercuryGate(0)
-            gate_on = false
-        else
-            engine.mercuryGate(1)
-            gate_on = true
-        end
+        launch(the_engine)
+
+        redraw()
     end
 end
 
 function enc(n,d)
-    if n == 2 then
+    if n == 1 then
+        the_engine = util.clamp(the_engine + d, 1, num_engines)
+        engine_name = engines[the_engine]
+        engine_low_name = engines_low[the_engine]
+        pow_list = NamelessNightmare[engine_low_name]
+        pow_select = 1
+        pow_name = pow_list[pow_select]
+        pow_100 = params:get(engine_low_name.."_self")
 
+        redraw()
+    end
+
+    if n == 2 then
+        num_pows = NamelessNightmare.num_pow[the_engine]
+        pow_select = util.clamp(pow_select + util.clamp(d, -1, 1), 1, num_pows)
+        pow_name = pow_list[pow_select]
+        if pow_select == 1 then
+            pow_100 = params:get(engine_low_name.."_self")
+        elseif pow_name == "Ring" then
+            pow_100 = params:get(engine_low_name.."_ring_pow")
+        else
+            pow_100 = params:get(string.lower(pow_name).."_pow")
+        end
+
+        redraw()
     end
 
     if n == 3 then
-
+        if pow_select == 1 then
+            params:delta(engine_low_name.."_self", d)
+            pow_100 = params:get(engine_low_name.."_self")
+        elseif pow_name == "Ring" then
+            params:delta(engine_low_name.."_ring_pow", d)
+            pow_100 = params:get(engine_low_name.."_ring_pow")
+        else
+            params:delta(string.lower(pow_name).."_pow", d)
+            pow_100 = params:get(string.lower(pow_name).."_pow")
+        end
+        
+        redraw()
     end
-end    
+    
+end
 
 
 -- initialization
 
 function init()
     -- add params
-
     NamelessNightmare.add_params()
     
     --norns initialization
     audio.rev_on()
-
-
-    -- UI initialization
-    --pages = UI.Pages.new(1, 9)
-    --tabs = UI.Tabs.new(1, tab_titles[pages.index])
 
     params:bang()
     redraw()
@@ -110,55 +151,42 @@ function redraw()
         screen.update()
 
     else
+
     screen.clear()
 
-    --pages:redraw()
-    --tabs:redraw()
+    --names and numbers
+    screen.level(9)
+    screen.aa(0)
+    screen.font_face(1)
+    screen.font_size(8)
+    screen.move(22, 10)
+    screen.text_center("Nameless")
+    screen.move(22, 18)
+    screen.text_center("Nightmare")
 
-    screen.level(15)
-    screen.move(64, 30)
-    screen.text_center("loaded")
-    screen.update()
+    screen.move(110, 10)
+    screen.text_center("Engine")
+    screen.level(12)
+    screen.move(110, 18)
+    screen.text_center(engine_name)
+
+    if launch_state[engines_low[the_engine]] then
+        screen.level(12)
+    else
+        screen.level(4)
     end
-end
+    screen.move(33, 62)
+    screen.text_center("launch")
 
+    screen.level(12)
+    screen.move(116, 56)
+    screen.text_center(pow_100)
+    screen.move(116, 62)
+    screen.text_center("Power")
 
-function pageprint()
-    if pages.index == 1 then
-        screen.level(15)
-        screen.move(64, 40)
-        screen.text_center("Mercury")
-    elseif pages.index == 2 then
-        screen.level(15)
-        screen.move(64, 40)
-        screen.text_center("Venus")
-    elseif pages.index == 3 then
-        screen.level(15)
-        screen.move(64, 40)
-        screen.text_center("Earth")
-    elseif pages.index == 4 then
-        screen.level(15)
-        screen.move(64, 40)
-        screen.text_center("Mars")
-    elseif pages.index == 5 then
-        screen.level(15)
-        screen.move(64, 40)
-        screen.text_center("Jupiter")
-    elseif pages.index == 6 then
-        screen.level(15)
-        screen.move(64, 40)
-        screen.text_center("Saturn")
-    elseif pages.index == 7 then
-        screen.level(15)
-        screen.move(64, 40)
-        screen.text_center("Uranus")
-    elseif pages.index == 8 then
-        screen.level(15)
-        screen.move(64, 40)
-        screen.text_center("Neptune")
-    elseif pages.index == 9 then
-        screen.level(15)
-        screen.move(64, 40)
-        screen.text_center("PlanetX")
+    screen.move(95, 62)
+    screen.text_right(pow_name)
+
+    screen.update()
     end
 end
