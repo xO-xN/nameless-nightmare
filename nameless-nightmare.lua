@@ -13,12 +13,12 @@ engine.name = 'Nameless_Nightmare'
 fileselect = require 'fileselect'
 util = require 'util'
 NamelessNightmare = include("nameless-nightmare/lib/NamelessNightmare_engine")
+drawPlanets = include("nameless-nightmare/lib/drawPlanets")
 
 local the_engine = 1
 local engines = {"Mercury", "Venus", "Earth", "Mars", "Jupiter", "Saturn", "Uranus", "Neptune", "PlanetX"}
 local engines_low = {"mercury", "venus", "earth", "mars", "jupiter", "saturn", "uranus", "neptune", "planetx"}
 local launch_state = {["mercury"] = false, ["venus"] = false, ["earth"] = false, ["mars"] = false, ["jupiter"] = false, ["saturn"] = false, ["uranus"] = false, ["neptune"] = false, ["planetx"] = false}
-local launch_engine = {engine.mercuryGate, engine.venusGate, engine.earthGate, engine.marsGate, engine.jupiterGate, engine.saturnGate, engine.uranusGate, engine.neptuneGate, engine.planetxGate}
 local num_engines = 9
 local pow_select = 1
 local pow_name = "self"
@@ -63,9 +63,50 @@ end
 
 -- engine launch
 function launch(i)
-    local engine_gate = launch_engine[i]
     launch_state[engines_low[i]] = not launch_state[engines_low[i]]
-    engine_gate("1")
+
+    if i == 1 then
+        engine.mercuryGate(params:get("mercury_self"), params:get("vulcan_pow"))
+    elseif i == 2 then
+        engine.venusGate(params:get("venus_self"), params:get("zoozve_pow"))
+    elseif i == 3 then
+        engine.earthGate(params:get("earth_self"), params:get("moon_pow"), params:get("satellites_pow"))
+    elseif i == 4 then
+        engine.marsGate(params:get("mars_self"), params:get("phobos_pow"), params:get("deimos_pow"))
+    elseif i == 5 then
+        engine.jupiterGate(params:get("jupiter_self"), params:get("moons_pow"), params:get("jupiter_ring_pow"))
+    elseif i == 6 then
+        engine.saturnGate(params:get("saturn_self"), params:get("mimas_pow"), params:get("rhea_pow"), params:get("titan_pow"), params:get("saturn_ring_pow"))
+    elseif i == 7 then
+        engine.uranusGate(params:get("uranus_self"), params:get("titania_pow"), params:get("oberon_pow"), params:get("uranus_ring_pow"))
+    elseif i == 8 then
+        engine.neptuneGate(params:get("neptune_self"), params:get("triton_pow"), params:get("nereid_pow"), params:get("pluto_pow"), params:get("orcus_pow"), params:get("neptune_ring_pow"))
+    elseif i == 9 then
+        engine.planetxGate(1)
+    end
+end
+
+-- planet drawing
+function draw_planet(i)
+    if i == 1 then
+        drawPlanets.mercury(params:get("mercury_self"), params:get("vulcan_pow"))
+    elseif i == 2 then
+        drawPlanets.venus(params:get("venus_self"), params:get("zoozve_pow"))
+    elseif i == 3 then
+        drawPlanets.earth(params:get("earth_self"), params:get("moon_pow"), params:get("satellites_pow"))
+    elseif i == 4 then
+        drawPlanets.mars(params:get("mars_self"), params:get("phobos_pow"), params:get("deimos_pow"))
+    elseif i == 5 then
+        drawPlanets.jupiter(params:get("jupiter_self"), params:get("moons_pow"), params:get("jupiter_ring_pow"))
+    elseif i == 6 then
+        drawPlanets.saturn(params:get("saturn_self"), params:get("mimas_pow"), params:get("rhea_pow"), params:get("titan_pow"), params:get("saturn_ring_pow"))
+    elseif i == 7 then
+        drawPlanets.uranus(params:get("uranus_self"), params:get("titania_pow"), params:get("oberon_pow"), params:get("uranus_ring_pow"))
+    elseif i == 8 then
+        drawPlanets.neptune(params:get("neptune_self"), params:get("triton_pow"), params:get("nereid_pow"), params:get("pluto_pow"), params:get("orcus_pow"), params:get("neptune_ring_pow"))
+    elseif i == 9 then
+        drawPlanets.planetx(params:get("planetx_self"))
+    end
 end
 
 -- controls
@@ -95,7 +136,7 @@ function enc(n,d)
         redraw()
     end
 
-    if n == 2 then
+    if n == 2 and file_exists == 1 then
         num_pows = NamelessNightmare.num_pow[the_engine]
         pow_select = util.clamp(pow_select + util.clamp(d, -1, 1), 1, num_pows)
         pow_name = pow_list[pow_select]
@@ -110,7 +151,7 @@ function enc(n,d)
         redraw()
     end
 
-    if n == 3 then
+    if n == 3 and file_exists == 1 then
         if pow_select == 1 then
             params:delta(engine_low_name.."_self", d)
             pow_100 = params:get(engine_low_name.."_self")
@@ -155,7 +196,7 @@ function redraw()
     screen.clear()
 
     --names and numbers
-    screen.level(9)
+    screen.level(2)
     screen.aa(0)
     screen.font_face(1)
     screen.font_size(8)
@@ -184,8 +225,10 @@ function redraw()
     screen.move(116, 62)
     screen.text_center("Power")
 
-    screen.move(95, 62)
-    screen.text_right(pow_name)
+    screen.move(99, 62)
+    screen.text_right(pow_name.." :")
+
+    draw_planet(the_engine)
 
     screen.update()
     end

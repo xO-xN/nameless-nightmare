@@ -61,7 +61,7 @@ function NamelessNightmare.add_params()
     params:add{type = "control", id = "neptune_ring_pow", name = "Ring", controlspec = specs.power, action = engine.neptuneRingPow}
 
     params:add_separator("PlanetX")
-    params:add{type = "control", id = "planetx_self", name = "X", controlspec = specs.amp, action = engine.xPow}
+    params:add{type = "control", id = "planetx_self", name = "X", controlspec = specs.power, action = engine.xPow}
 end
 
 NamelessNightmare.mercury = {"self", "Vulcan"}
