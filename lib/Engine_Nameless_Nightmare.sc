@@ -16,6 +16,9 @@ Engine_Nameless_Nightmare : CroneEngine {
 			var numChannels;
 			var buffer;
 
+			var mercury_on=0, venus_on=0, earth_on=0, mars_on=0, jupiter_on=0, saturn_on=0, uranus_on=0, neptune_on=0, planetx_on=0;
+			var turn_off_all = {mercury.set(\gate, 0); venus.set(\gate, 0); earth.set(\gate, 0); mars.set(\gate, 0); jupiter.set(\gate, 0); saturn.set(\gate, 0); uranus.set(\gate, 0); neptune.set(\gate, 0); planetx.set(\gate, 0)};
+
 			numChannels = SoundFile.use(path.asString(), { |f| f.numChannels });
 
 			buffer = Buffer.readChannel(context.server, path, 0, -1, [0], { |b|
@@ -48,7 +51,7 @@ Engine_Nameless_Nightmare : CroneEngine {
 		//Mercury
 		//vulcan_pow(min: 0, max: 100);
         SynthDef(\mercury, {
-			arg buf_l, buf_r, gate=0, amp=80, vulcan_pow=0;
+			arg buf_l, buf_r, gate=0, amp=80, vulcan_pow=0, x_pow=0;
 			var sig, env;
 			sig = GrainBuf.ar(
 				2,
@@ -63,10 +66,10 @@ Engine_Nameless_Nightmare : CroneEngine {
 			sig = Splay.ar(sig, vulcan_pow/100);
 
 			sig = sig * -3.dbamp;
-			env = EnvGen.kr(Env.asr(1, 1, 1), gate: gate, doneAction: 2);
+			env = EnvGen.kr(Env.asr(2, 1, 4), gate: gate, doneAction: 2);
 			sig = sig * env * (amp/100);
 
-			sig = GVerb.ar(sig, 3, 1.6, 0.5, 0.5, 12, 0.6, 0.282, 0.2223);
+			sig = GVerb.ar(sig, 3, 0.3+(x_pow/33), 0.5+(x_pow/300), 0.5+(x_pow/300), 12, 0.6, 0.282+(x_pow/500), 0.2223+(x_pow/800));
 			sig = Limiter.ar(sig);
 
 			Out.ar(0, sig);
@@ -76,7 +79,7 @@ Engine_Nameless_Nightmare : CroneEngine {
 		//Venus
 		//zoozve_pow(min: 0, max: 100);
 		SynthDef(\venus, {
-			arg buf_l, buf_r, gate=0, amp=80, zoozve_pow=0;
+			arg buf_l, buf_r, gate=0, amp=80, zoozve_pow=0, x_pow=0;
 			var sig, env;
 			sig = GrainBuf.ar(
 				2,
@@ -90,10 +93,10 @@ Engine_Nameless_Nightmare : CroneEngine {
 			sig = Splay.ar(sig);
 			sig = sig + PitchShift.ar(sig, 0.2, [LFNoise1.kr(0.01467, 0.015, zoozve_pow/44), LFNoise1.kr(0.01427, 0.015, zoozve_pow/100)], 0, 0.22, zoozve_pow/100);
 			sig = sig.tanh;
-			env = EnvGen.kr(Env.asr(1, 1, 1), gate: gate, doneAction: 2);
+			env = EnvGen.kr(Env.asr(2, 1, 4), gate: gate, doneAction: 2);
 			sig = sig * env * (amp/100);
 
-			sig = GVerb.ar(sig, 4, 0.8, 0.3, 0.5, 8, 0.6, 0.482, 0.0223);
+			sig = GVerb.ar(sig, 3, 0.8+(x_pow/33), 0.5+(x_pow/300), 0.4+(x_pow/300), 12, 0.6, 0.282+(x_pow/500), 0.2223+(x_pow/300));
 			sig = Limiter.ar(sig);
 
 			Out.ar(0, sig);
@@ -104,7 +107,7 @@ Engine_Nameless_Nightmare : CroneEngine {
 		//moon_pow(min:0, max:100);
 		//satellites_pow;
 		SynthDef(\earth, {
-			arg buf_l, buf_r, gate=0, amp=80, moon_pow=0, satellites_pow=0;
+			arg buf_l, buf_r, gate=0, amp=80, moon_pow=0, satellites_pow=0, x_pow=0;
 			var sig, sig1, env, env1, moon_amp, moon_sel, earthshake, moon_theia, theiashake, earth_pan, one, zero;
 
 			moon_sel = ((moon_pow-50)/50).atan2(0.1).round(1) + 1;
@@ -144,11 +147,11 @@ Engine_Nameless_Nightmare : CroneEngine {
 			sig1 = sig1.tanh;
 			sig1 = Splay.ar(sig1, 1);
 
-			env = EnvGen.kr(Env.asr(1, 1, 1), gate: gate, doneAction: 2);
-			env1 = EnvGen.kr(Env.asr(1, 1, 1), gate: gate, doneAction: 2);
+			env = EnvGen.kr(Env.asr(2, 1, 4), gate: gate, doneAction: 2);
+			env1 = EnvGen.kr(Env.asr(2, 1, 4), gate: gate, doneAction: 2);
 			sig = (sig * env * (amp/100)) + (sig1 * env1 * (moon_amp));
 
-			sig = GVerb.ar(sig, 3, 1.6, 0.5, 0.5, 12, 0.6, 0.282, 0.2223);
+			sig = GVerb.ar(sig, 3, 1.6+(x_pow/33), 0.5+(x_pow/300), 0.5+(x_pow/300), 12, 0.6, 0.282+(x_pow/500), 0.2223+(x_pow/300));
 			sig = Limiter.ar(sig);
 
 			Out.ar(0, sig);
@@ -159,7 +162,7 @@ Engine_Nameless_Nightmare : CroneEngine {
 		//phobos_pow(min:0, max:100);
 		//deimos_pow;
 		SynthDef(\mars, {
-			arg buf_l, buf_r, gate=0, amp=80, phobos_pow=0, deimos_pow=0;
+			arg buf_l, buf_r, gate=0, amp=80, phobos_pow=0, deimos_pow=0, x_pow=0;
 			var sig, sig1, sig2, env, env1, env2, phobos_amp, phobos_sel, deimos_amp, deimos_sel, marsshake, phobosshake;
 
 			phobos_sel = ((phobos_pow-50)/50).atan2(0.1).round(1) + 1;
@@ -193,7 +196,7 @@ Engine_Nameless_Nightmare : CroneEngine {
 				LFSaw.ar(0.00025, -1, 0.49, 0.5),
 				pan: LFNoise1.kr(20)
 			);
-			sig1 = sig1 * -1.dbamp;
+			sig1 = sig1 * -3.dbamp;
 			sig1 = sig1.tanh;
 
 			//deimos
@@ -208,12 +211,12 @@ Engine_Nameless_Nightmare : CroneEngine {
 			sig2 = sig2 * -8.dbamp;
 			sig2 = sig2.tanh;
 
-			env = EnvGen.kr(Env.asr(1, 1, 1), gate: gate, doneAction: 2);
-			env1 = EnvGen.kr(Env.asr(1, 1, 1), gate: gate, doneAction: 2);
-			env2 = EnvGen.kr(Env.asr(1, 1, 1), gate: gate, doneAction: 2);
+			env = EnvGen.kr(Env.asr(2, 1, 4), gate: gate, doneAction: 2);
+			env1 = EnvGen.kr(Env.asr(2, 1, 4), gate: gate, doneAction: 2);
+			env2 = EnvGen.kr(Env.asr(2, 1, 4), gate: gate, doneAction: 2);
 			sig = (sig * env * (amp/100)) + (sig1 * env1 * phobos_amp) + (sig2 * env2 * deimos_amp);
 
-			sig = GVerb.ar(sig, 3, 1.6, 0.5, 0.5, 12, 0.6, 0.282, 0.2223);
+			sig = GVerb.ar(sig, 3, 1.6+(x_pow/33), 0.5+(x_pow/300), 0.5+(x_pow/300), 12, 0.6, 0.282+(x_pow/300), 0.2223+(x_pow/300));
 			sig = Limiter.ar(sig);
 			Out.ar(0, sig);
 		}).add;
@@ -223,7 +226,7 @@ Engine_Nameless_Nightmare : CroneEngine {
 		//moons_pow(min:0, max:100);
 		//ring_pow();
 		SynthDef(\jupiter, {
-			arg buf_l, buf_r, gate=0, amp=80, moons_pow=0, ring_pow=0;
+			arg buf_l, buf_r, gate=0, amp=80, moons_pow=0, ring_pow=0, x_pow=0;
 			var sig, sig1, env, env1, moons_mod, moons_amp;
 
 			moons_amp = Select.kr((moons_pow/100).round(1), [moons_pow/50, 1]);
@@ -253,12 +256,12 @@ Engine_Nameless_Nightmare : CroneEngine {
 			);
 			sig1 = Splay.ar(sig1, 0.9, 0.8);
 
-			env = EnvGen.kr(Env.asr(1, 1, 1), gate: gate, doneAction: 2);
-			env1 = EnvGen.kr(Env.asr(1, 1, 1), gate: gate, doneAction: 2);
+			env = EnvGen.kr(Env.asr(2, 1, 4), gate: gate, doneAction: 2);
+			env1 = EnvGen.kr(Env.asr(2, 1, 4), gate: gate, doneAction: 2);
 
 			sig = (sig * env * (amp/100)) + (sig1 * env1 * moons_amp);
 
-			sig = FreeVerb2.ar(sig[0], sig[1], 0.5, 0.8+(ring_pow*0.002), 0.6);
+			sig = FreeVerb2.ar(sig[0], sig[1], 0.5, 0.8+(ring_pow*0.002), 0.6+(x_pow/300),0.6+(x_pow/300));
 			sig = Limiter.ar(sig);
 			Out.ar(0, sig);
 		}).add;
@@ -270,7 +273,7 @@ Engine_Nameless_Nightmare : CroneEngine {
 		//rhea_pow();
 		//titan_pow();
 		SynthDef(\saturn, {
-			arg buf_l, buf_r, gate=0, amp=80, ring_pow=0, mimas_pow=0, rhea_pow=0, titan_pow=0;
+			arg buf_l, buf_r, gate=0, amp=80, ring_pow=0, mimas_pow=0, rhea_pow=0, titan_pow=0, x_pow=0;
 			var sig, sig1, sig2, sig3, sig4, env, env1, env2, env4;
 
 			sig = GrainBuf.ar(
@@ -320,14 +323,14 @@ Engine_Nameless_Nightmare : CroneEngine {
 			sig4 = Splay.ar(sig4, 0.3);
 			sig4 = sig4 * -3.dbamp;
 
-			env = EnvGen.kr(Env.asr(1, 1, 1), gate: gate, doneAction: 2);
-			env1 = EnvGen.kr(Env.asr(1, 1, 1), gate: gate, doneAction: 2);
-			env2 = EnvGen.kr(Env.asr(1, 1, 1), gate: gate, doneAction: 2);
-			env4 = EnvGen.kr(Env.asr(1, 1, 1), gate: gate, doneAction: 2);
+			env = EnvGen.kr(Env.asr(2, 1, 4), gate: gate, doneAction: 2);
+			env1 = EnvGen.kr(Env.asr(2, 1, 4), gate: gate, doneAction: 2);
+			env2 = EnvGen.kr(Env.asr(2, 1, 4), gate: gate, doneAction: 2);
+			env4 = EnvGen.kr(Env.asr(2, 1, 4), gate: gate, doneAction: 2);
 
 			sig = (sig * env * (amp/100)) + (sig1 * env1 * (ring_pow/100)) + (sig2 * env2 * (mimas_pow/100)) + sig3 + (sig4 * env4 * (titan_pow/100));
 
-			sig = FreeVerb2.ar(sig[0], sig[1], 1, 0.8, 0.7);
+			sig = FreeVerb2.ar(sig[0], sig[1], 1, 0.8+(x_pow/500), 0.6+(x_pow/300), 0.6+(x_pow/300));
 			sig = Limiter.ar(sig);
 			Out.ar(0, sig);
 		}).add;
@@ -338,7 +341,7 @@ Engine_Nameless_Nightmare : CroneEngine {
 		//oberon_pow();
 		//ring_pow();
 		SynthDef(\uranus, {
-			arg buf_l, buf_r, gate=0, amp=80, titania_pow=0, oberon_pow=0, ring_pow=0;
+			arg buf_l, buf_r, gate=0, amp=80, titania_pow=0, oberon_pow=0, ring_pow=0, x_pow=0;
 			var sig, sig1, sig2, sig3, env, env1, env2, env3, noise1, noise2;
 
 			noise1 = LFNoise0.kr(0.126, 50, 300 + (titania_pow*2.4));
@@ -390,13 +393,13 @@ Engine_Nameless_Nightmare : CroneEngine {
 				pan: SinOsc.kr(0.229, [0,pi])
 			);
 
-			env = EnvGen.kr(Env.asr(1, 1, 1), gate: gate, doneAction: 2);
-			env1 = EnvGen.kr(Env.asr(1, 1, 1), gate: gate, doneAction: 2);
-			env2 = EnvGen.kr(Env.asr(1, 1, 1), gate: gate, doneAction: 2);
-			env3 = EnvGen.kr(Env.asr(1, 1, 1), gate: gate, doneAction: 2);
+			env = EnvGen.kr(Env.asr(2, 1, 4), gate: gate, doneAction: 2);
+			env1 = EnvGen.kr(Env.asr(2, 1, 4), gate: gate, doneAction: 2);
+			env2 = EnvGen.kr(Env.asr(2, 1, 4), gate: gate, doneAction: 2);
+			env3 = EnvGen.kr(Env.asr(2, 1, 4), gate: gate, doneAction: 2);
 			sig = (sig * env * (amp/100)) + (sig1 * env1 * (titania_pow/130)) + (sig2 * env2 * (oberon_pow/130)) + (sig3 * env3 * (ring_pow/150));
 
-			sig = FreeVerb2.ar(sig[0], sig[1], 0.4, 0.8, 0.6);
+			sig = FreeVerb2.ar(sig[0], sig[1], 0.4+(x_pow/500), 0.8+(x_pow/500), 0.6+(x_pow/300), 0.6+(x_pow/300));
 			sig = Limiter.ar(sig);
 			Out.ar(0, sig);
 		}).add;
@@ -415,10 +418,10 @@ Engine_Nameless_Nightmare : CroneEngine {
 			//self
 			sig = GrainBuf.ar(
 				2,
-				Impulse.ar(LFTri.kr(0.044, -0.3, 3.888, 4)),
+				Impulse.ar(LFTri.kr(0.044, -0.3, 3.888, 4)+(ring_pow/20)),
 				LFSaw.ar(LFPulse.kr(Dust.ar(0.07), 0, LFNoise0.ar(0.002, 0.2, 0.4), 0.8) + 1.2, -1, 0.038, 0.102),
 				[buf_l, buf_r],
-				LFNoise0.ar(0.3, 0.428, 0.8),
+				LFNoise0.ar(0.3, 0.428, 0.8+(ring_pow/200)),
 				[LFSaw.ar(LFNoise0.ar(0.1, 100, 104), 0, -0.1, 0.3), LFSaw.ar(LFNoise0.ar(0.1, 100, 104), 0, -0.15, 0.75)],
 			);
 			sig = Pan2.ar(sig, LFNoise1.ar(1, 0.9));
@@ -472,15 +475,15 @@ Engine_Nameless_Nightmare : CroneEngine {
 			sig4 = sig4 * -3.dbamp;
 			sig4 = HPF.ar(sig4, 120);
 
-			env = EnvGen.kr(Env.asr(1, 1, 1), gate: gate, doneAction: 2);
-			env1 = EnvGen.kr(Env.asr(1, 1, 1), gate: gate, doneAction: 2);
-			env2 = EnvGen.kr(Env.asr(1, 1, 1), gate: gate, doneAction: 2);
-			env3 = EnvGen.kr(Env.asr(1, 1, 1), gate: gate, doneAction: 2);
-			env4 = EnvGen.kr(Env.asr(1, 1, 1), gate: gate, doneAction: 2);
+			env = EnvGen.kr(Env.asr(2, 1, 4), gate: gate, doneAction: 2);
+			env1 = EnvGen.kr(Env.asr(2, 1, 4), gate: gate, doneAction: 2);
+			env2 = EnvGen.kr(Env.asr(2, 1, 4), gate: gate, doneAction: 2);
+			env3 = EnvGen.kr(Env.asr(2, 1, 4), gate: gate, doneAction: 2);
+			env4 = EnvGen.kr(Env.asr(2, 1, 4), gate: gate, doneAction: 2);
 
 			sig = (sig * env * (amp/100)) + (sig1 * env1 * (triton_pow/100)) + (sig2 * env2 * (pluto_pow/100)) + (sig3 * env3 * (orcus_pow/100)) + (sig4 * env4 * (nereid_pow/100));
 
-			sig = FreeVerb.ar(sig, 0.4, 0.8, 0.6);
+			sig = FreeVerb.ar(sig, 0.4+(x_pow/500), 0.8+(x_pow/500), 0.6+(x_pow/300), 0.6+(x_pow/300));
 			sig = Limiter.ar(sig);
 			Out.ar(0, sig);
 		}).add;
@@ -505,7 +508,7 @@ Engine_Nameless_Nightmare : CroneEngine {
 			sig = SinOsc.ar(LFNoise1.kr(0.0223, 12, 24) + ((sig+1.2)*36), 0, LFNoise1.kr(0.659, 0.044, 0.05));
 			//sig = sig * -3.dbamp;
 
-			env = EnvGen.kr(Env.asr(1, 1, 1), gate: gate, doneAction: 2);
+			env = EnvGen.kr(Env.asr(2, 1, 4), gate: gate, doneAction: 2);
 			sig = sig * env;
 
 			sig = FreeVerb2.ar(sig[0], sig[1], 0.4, 0.8, 0.6);
@@ -522,13 +525,14 @@ Engine_Nameless_Nightmare : CroneEngine {
 		});
 
 		//mercury
-		this.addCommand("mercuryGate", "ff", { arg msg;
+		this.addCommand("mercuryGate", "fff", { arg msg;
 			if (mercury_on == 0,
 				{mercury = Synth.new(\mercury, [
 					\buf_l, bufferL,
 					\buf_r, bufferR,
 					\amp, msg[1],
 					\vulcan_pow, msg[2],
+					\x_pow, msg[3],
 					\gate, 1
 				]); mercury_on = 1},
 				{mercury.set(\gate, 0); mercury_on = 0}
@@ -544,13 +548,14 @@ Engine_Nameless_Nightmare : CroneEngine {
 
 
 		//venus
-		this.addCommand("venusGate", "ff", { arg msg;
+		this.addCommand("venusGate", "fff", { arg msg;
 			if (venus_on == 0,
 				{venus = Synth.new(\venus, [
 					\buf_l, bufferL,
 					\buf_r, bufferR,
 					\amp, msg[1],
 					\zoozve_pow, msg[2],
+					\x_pow, msg[3],
 					\gate, 1
 				]); venus_on = 1},
 				{venus.set(\gate, 0); venus_on = 0}
@@ -567,7 +572,7 @@ Engine_Nameless_Nightmare : CroneEngine {
 
 
 		//earth
-		this.addCommand("earthGate", "fff", { arg msg;
+		this.addCommand("earthGate", "ffff", { arg msg;
 			if (earth_on == 0,
 				{earth = Synth.new(\earth, [
 					\buf_l, bufferL,
@@ -575,6 +580,7 @@ Engine_Nameless_Nightmare : CroneEngine {
 					\amp, msg[1],
 					\moon_pow, msg[2],
 					\satellites_pow, msg[3],
+					\x_pow, msg[4],
 					\gate, 1
 				]); earth_on = 1},
 				{earth.set(\gate, 0); earth_on = 0}
@@ -595,7 +601,7 @@ Engine_Nameless_Nightmare : CroneEngine {
 
 
 		//mars
-		this.addCommand("marsGate", "fff", { arg msg;
+		this.addCommand("marsGate", "ffff", { arg msg;
 			if (mars_on == 0,
 				{mars = Synth.new(\mars, [
 					\buf_l, bufferL,
@@ -603,6 +609,7 @@ Engine_Nameless_Nightmare : CroneEngine {
 					\amp, msg[1],
 					\phobos_pow, msg[2],
 					\deimos_pow, msg[3],
+					\x_pow, msg[4],
 					\gate, 1
 				]); mars_on = 1},
 				{mars.set(\gate, 0); mars_on = 0}
@@ -623,7 +630,7 @@ Engine_Nameless_Nightmare : CroneEngine {
 
 
 		//jupiter
-		this.addCommand("jupiterGate", "fff", { arg msg;
+		this.addCommand("jupiterGate", "ffff", { arg msg;
 			if (jupiter_on == 0,
 				{jupiter = Synth.new(\jupiter, [
 					\buf_l, bufferL,
@@ -631,6 +638,7 @@ Engine_Nameless_Nightmare : CroneEngine {
 					\amp, msg[1],
 					\moons_pow, msg[2],
 					\ring_pow, msg[3],
+					\x_pow, msg[4],
 					\gate, 1
 				]); jupiter_on = 1},
 				{jupiter.set(\gate, 0); jupiter_on = 0}
@@ -651,7 +659,7 @@ Engine_Nameless_Nightmare : CroneEngine {
 
 
 		//saturn
-		this.addCommand("saturnGate", "fffff", { arg msg;
+		this.addCommand("saturnGate", "ffffff", { arg msg;
 			if (saturn_on == 0,
 				{saturn = Synth.new(\saturn, [
 					\buf_l, bufferL,
@@ -661,6 +669,7 @@ Engine_Nameless_Nightmare : CroneEngine {
 					\rhea_pow, msg[3],
 					\titan_pow, msg[4],
 					\ring_pow, msg[5],
+					\x_pow, msg[6],
 					\gate, 1
 				]); saturn_on = 1},
 				{saturn.set(\gate, 0); saturn_on = 0}
@@ -689,7 +698,7 @@ Engine_Nameless_Nightmare : CroneEngine {
 
 
 		//uranus
-		this.addCommand("uranusGate", "ffff", { arg msg;
+		this.addCommand("uranusGate", "fffff", { arg msg;
 			if (uranus_on == 0,
 				{uranus = Synth.new(\uranus, [
 					\buf_l, bufferL,
@@ -698,6 +707,7 @@ Engine_Nameless_Nightmare : CroneEngine {
 					\titania_pow, msg[2],
 					\oberon_pow, msg[3],
 					\ring_pow, msg[4],
+					\x_pow, msg[5],
 					\gate, 1
 				]); uranus_on = 1},
 				{uranus.set(\gate, 0); uranus_on = 0}
@@ -722,7 +732,7 @@ Engine_Nameless_Nightmare : CroneEngine {
 
 
 		//neptune
-		this.addCommand("neptuneGate", "ffffff", { arg msg;
+		this.addCommand("neptuneGate", "fffffff", { arg msg;
 			if (neptune_on == 0,
 				{neptune = Synth.new(\neptune, [
 					\buf_l, bufferL,
@@ -733,6 +743,7 @@ Engine_Nameless_Nightmare : CroneEngine {
 					\pluto_pow, msg[4],
 					\orcus_pow, msg[5],
 					\ring_pow, msg[6],
+					\x_pow, msg[7],
 					\gate, 1
 				]); neptune_on = 1},
 				{neptune.set(\gate, 0); neptune_on = 0}
@@ -779,6 +790,13 @@ Engine_Nameless_Nightmare : CroneEngine {
 
 		this.addCommand("xPow", "f", { arg msg;
 			//planetx.set(\amp, msg[1]);
+			mercury.set(\x_pow, msg[1]);
+			venus.set(\x_pow, msg[1]);
+			earth.set(\x_pow, msg[1]);
+			mars.set(\x_pow, msg[1]);
+			jupiter.set(\x_pow, msg[1]);
+			saturn.set(\x_pow, msg[1]);
+			uranus.set(\x_pow, msg[1]);
 			neptune.set(\x_pow, msg[1])
 		});
 

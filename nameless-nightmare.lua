@@ -44,6 +44,7 @@ function load_file(file)
         length = samples/samplerate
         engine.read(file)
         file_exists = 1
+        launch_state = {["mercury"] = false, ["venus"] = false, ["earth"] = false, ["mars"] = false, ["jupiter"] = false, ["saturn"] = false, ["uranus"] = false, ["neptune"] = false, ["planetx"] = false}
         print_info(file)
         redraw()
     end
@@ -66,21 +67,21 @@ function launch(i)
     launch_state[engines_low[i]] = not launch_state[engines_low[i]]
 
     if i == 1 then
-        engine.mercuryGate(params:get("mercury_self"), params:get("vulcan_pow"))
+        engine.mercuryGate(params:get("mercury_self"), params:get("vulcan_pow"), params:get("planetx_self"))
     elseif i == 2 then
-        engine.venusGate(params:get("venus_self"), params:get("zoozve_pow"))
+        engine.venusGate(params:get("venus_self"), params:get("zoozve_pow"), params:get("planetx_self"))
     elseif i == 3 then
-        engine.earthGate(params:get("earth_self"), params:get("moon_pow"), params:get("satellites_pow"))
+        engine.earthGate(params:get("earth_self"), params:get("moon_pow"), params:get("satellites_pow"), params:get("planetx_self"))
     elseif i == 4 then
-        engine.marsGate(params:get("mars_self"), params:get("phobos_pow"), params:get("deimos_pow"))
+        engine.marsGate(params:get("mars_self"), params:get("phobos_pow"), params:get("deimos_pow"), params:get("planetx_self"))
     elseif i == 5 then
-        engine.jupiterGate(params:get("jupiter_self"), params:get("moons_pow"), params:get("jupiter_ring_pow"))
+        engine.jupiterGate(params:get("jupiter_self"), params:get("moons_pow"), params:get("jupiter_ring_pow"), params:get("planetx_self"))
     elseif i == 6 then
-        engine.saturnGate(params:get("saturn_self"), params:get("mimas_pow"), params:get("rhea_pow"), params:get("titan_pow"), params:get("saturn_ring_pow"))
+        engine.saturnGate(params:get("saturn_self"), params:get("mimas_pow"), params:get("rhea_pow"), params:get("titan_pow"), params:get("saturn_ring_pow"), params:get("planetx_self"))
     elseif i == 7 then
-        engine.uranusGate(params:get("uranus_self"), params:get("titania_pow"), params:get("oberon_pow"), params:get("uranus_ring_pow"))
+        engine.uranusGate(params:get("uranus_self"), params:get("titania_pow"), params:get("oberon_pow"), params:get("uranus_ring_pow"), params:get("planetx_self"))
     elseif i == 8 then
-        engine.neptuneGate(params:get("neptune_self"), params:get("triton_pow"), params:get("nereid_pow"), params:get("pluto_pow"), params:get("orcus_pow"), params:get("neptune_ring_pow"))
+        engine.neptuneGate(params:get("neptune_self"), params:get("triton_pow"), params:get("nereid_pow"), params:get("pluto_pow"), params:get("orcus_pow"), params:get("neptune_ring_pow"), params:get("planetx_self"))
     elseif i == 9 then
         engine.planetxGate(1)
     end
@@ -174,6 +175,10 @@ end
 function init()
     -- add params
     NamelessNightmare.add_params()
+    the_engine = math.random(1, num_engines-1)
+    engine_name = engines[the_engine]
+    engine_low_name = engines_low[the_engine]
+    pow_list = NamelessNightmare[engine_low_name]
     
     --norns initialization
     audio.rev_on()
@@ -188,7 +193,7 @@ function redraw()
         screen.clear()
         screen.level(15)
         screen.move(64, 30)
-        screen.text_center("HOLD K1 TO LOAD SOUND")
+        screen.text_center("HOLD K1 TO LOAD SAMPLE")
         screen.update()
 
     else
