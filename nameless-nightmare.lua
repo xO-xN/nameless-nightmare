@@ -12,7 +12,7 @@
 -- 
 -- K3: Launch engine
 -- E1: Select engine
--- E2: Select power
+-- E2: Select power source
 -- E3: Adjust power level
 --
 --
