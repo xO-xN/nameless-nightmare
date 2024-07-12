@@ -1,13 +1,24 @@
--- Nameless Nightmare v0.8.0
--- Granular-based ambient sound generator
---
---
+-- Nameless Nightmare v0.8.1
+-- Ambient sound generator
+-- 
+-- Inspired by Solar System
 --
 -- 
 --
 --    ▼ instructions below ▼
--- watch out your back
--- (and watch out cpu actually)
+-- K2: Load file / Record input
+-- hold K1 to switch input mode
+-- 
+-- K3: Launch engine
+-- E1: Select engine
+-- E2: Select power
+-- E3: Adjust power level
+--
+--
+--
+-- 
+-- Planet X do not make sound
+-- What does it do?
 
 engine.name = 'Nameless_Nightmare'
 fileselect = require 'fileselect'
