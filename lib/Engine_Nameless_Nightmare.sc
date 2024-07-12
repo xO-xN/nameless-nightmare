@@ -2,6 +2,7 @@ Engine_Nameless_Nightmare : CroneEngine {
 
     var <bufferL;
 	var <bufferR;
+	var <recSynth;
 
 	var mercury, venus, earth, mars, jupiter, saturn, uranus, neptune, planetx;
 	var mercury_on=0, venus_on=0, earth_on=0, mars_on=0, jupiter_on=0, saturn_on=0, uranus_on=0, neptune_on=0, planetx_on=0;
@@ -36,6 +37,25 @@ Engine_Nameless_Nightmare : CroneEngine {
 				bufferR = buffer;
 			});
 		});
+	}
+
+	recordToBuf {
+		recSynth = { 
+			RecordBuf.ar(
+				SoundIn.ar(0),
+				bufferL,
+				doneAction: 2
+			);
+			RecordBuf.ar(
+				SoundIn.ar(1),
+				bufferR,
+				doneAction: 2
+			);
+		}.play;
+	}
+  
+	stopRecord { 
+		if (recSynth.notNil, { recSynth.free; });
 	}
 
     alloc {
@@ -519,7 +539,18 @@ Engine_Nameless_Nightmare : CroneEngine {
 		context.server.sync;
 
 
+		this.addCommand("recStart", "i", { arg msg;
+			"record start".postln;
+			bufferL.zero;
+			bufferR.zero;
+			this.recordToBuf()
+		});
 
+		this.addCommand("recEnd", "i", { arg msg;
+			"record end".postln;
+			this.stopRecord()
+		});
+		
 		this.addCommand("read", "s", { arg msg;
 			this.readBuf(msg[1])
 		});
@@ -806,6 +837,7 @@ Engine_Nameless_Nightmare : CroneEngine {
 	free {
 		bufferL.free;
 		bufferR.free;
+		recSynth.free;
 
 		mercury.free;
 		venus.free;

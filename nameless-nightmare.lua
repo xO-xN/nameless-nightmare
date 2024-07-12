@@ -1,9 +1,9 @@
--- Nameless Nightmare v0.5.0
+-- Nameless Nightmare v0.8.0
 -- Granular-based ambient sound generator
 --
--- llllllll.co/t/nameless-nightmare
 --
 --
+-- 
 --
 --    ▼ instructions below ▼
 -- watch out your back
@@ -31,6 +31,7 @@ local num_pows = 2
 
 local file_exists = 0
 local selecting = false
+local sampling = false
 local length = 0.0
 
 
@@ -48,6 +49,20 @@ function load_file(file)
         print_info(file)
         redraw()
     end
+end
+
+function record_buffer()
+    sampling = true
+    engine.recStart(1)
+    launch_state = {["mercury"] = false, ["venus"] = false, ["earth"] = false, ["mars"] = false, ["jupiter"] = false, ["saturn"] = false, ["uranus"] = false, ["neptune"] = false, ["planetx"] = false}
+    redraw()
+end
+
+function play_buffer()
+    file_exists = 1
+    sampling = false
+    engine.recEnd(1)
+    redraw()
 end
 
 function print_info(file)
@@ -114,9 +129,25 @@ end
 
 function key(n,z)
     if n == 1 and z == 1 then
-        selecting = true
-        fileselect.enter(_path.dust,load_file)
-    elseif n == 2 and z == 1 then
+        if params:get('sample_mode') == 1 then
+            params:set('sample_mode', 2)
+        else
+            params:set('sample_mode', 1)
+        end
+        redraw()
+    elseif n == 2 then
+        -- load file OR recording sample
+        file_exists = 0
+        if params:get('sample_mode') == 1 and z == 1 then
+            selecting = true
+            fileselect.enter(_path.dust,load_file)
+        elseif params:get('sample_mode') == 2 then
+            if z == 1 then
+                record_buffer()
+            elseif z == 0 then
+                play_buffer()
+            end
+        end
     elseif n == 3 and z == 1 then
         launch(the_engine)
 
@@ -137,7 +168,7 @@ function enc(n,d)
         redraw()
     end
 
-    if n == 2 and file_exists == 1 then
+    if n == 2 then
         num_pows = NamelessNightmare.num_pow[the_engine]
         pow_select = util.clamp(pow_select + util.clamp(d, -1, 1), 1, num_pows)
         pow_name = pow_list[pow_select]
@@ -152,7 +183,7 @@ function enc(n,d)
         redraw()
     end
 
-    if n == 3 and file_exists == 1 then
+    if n == 3 then
         if pow_select == 1 then
             params:delta(engine_low_name.."_self", d)
             pow_100 = params:get(engine_low_name.."_self")
@@ -174,6 +205,8 @@ end
 
 function init()
     -- add params
+    params:add_separator("Load/Record")
+    params:add_option('sample_mode', 'Sample Mode', {'file loading', 'recording'}, 1)
     NamelessNightmare.add_params()
     the_engine = math.random(1, num_engines-1)
     engine_name = engines[the_engine]
@@ -188,16 +221,6 @@ function init()
 end
 
 function redraw()
-    --screen size 128 * 64
-    if file_exists == 0 then
-        screen.clear()
-        screen.level(15)
-        screen.move(64, 30)
-        screen.text_center("HOLD K1 TO LOAD SAMPLE")
-        screen.update()
-
-    else
-
     screen.clear()
 
     --names and numbers
@@ -216,12 +239,27 @@ function redraw()
     screen.move(110, 18)
     screen.text_center(engine_name)
 
+    -- load/record mode
+    screen.move(10, 62)
+    if params:get('sample_mode') == 1 then
+        screen.level(12)
+        screen.text_center("Load")
+    elseif params:get('sample_mode') == 2 then
+        if sampling then
+            screen.level(12)
+        else
+            screen.level(4)
+        end
+        screen.text_center("Rec")
+    end
+
+    -- engine toggle on/off
     if launch_state[engines_low[the_engine]] then
         screen.level(12)
     else
         screen.level(4)
     end
-    screen.move(33, 62)
+    screen.move(35, 62)
     screen.text_center("launch")
 
     screen.level(12)
@@ -236,5 +274,4 @@ function redraw()
     draw_planet(the_engine)
 
     screen.update()
-    end
 end
