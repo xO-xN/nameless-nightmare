@@ -1,13 +1,25 @@
--- Nameless Nightmare v0.8.0
--- Granular-based ambient sound generator
---
---
+-- Nameless Nightmare v0.8.2
+-- Ambient sound generator
+-- 
+-- Inspired by Solar System
 --
 -- 
 --
 --    ▼ instructions below ▼
--- watch out your back
--- (and watch out cpu actually)
+-- K2: Load file / Record input
+-- hold K1 to switch input mode
+-- Record mode: hold K1 to rec
+-- 
+-- K3: Launch engine
+-- E1: Select engine
+-- E2: Select power
+-- E3: Adjust power level
+--
+--
+--
+-- 
+-- Planet X do not make sound
+-- What does it do?
 
 engine.name = 'Nameless_Nightmare'
 fileselect = require 'fileselect'
@@ -45,7 +57,7 @@ function load_file(file)
         length = samples/samplerate
         engine.read(file)
         file_exists = 1
-        launch_state = {["mercury"] = false, ["venus"] = false, ["earth"] = false, ["mars"] = false, ["jupiter"] = false, ["saturn"] = false, ["uranus"] = false, ["neptune"] = false, ["planetx"] = false}
+        reset_all_engines()
         print_info(file)
         redraw()
     end
@@ -54,7 +66,7 @@ end
 function record_buffer()
     sampling = true
     engine.recStart(1)
-    launch_state = {["mercury"] = false, ["venus"] = false, ["earth"] = false, ["mars"] = false, ["jupiter"] = false, ["saturn"] = false, ["uranus"] = false, ["neptune"] = false, ["planetx"] = false}
+    reset_all_engines()
     redraw()
 end
 
@@ -99,6 +111,15 @@ function launch(i)
         engine.neptuneGate(params:get("neptune_self"), params:get("triton_pow"), params:get("nereid_pow"), params:get("pluto_pow"), params:get("orcus_pow"), params:get("neptune_ring_pow"), params:get("planetx_self"))
     elseif i == 9 then
         engine.planetxGate(1)
+    end
+end
+
+function reset_all_engines()
+    for i = 1, 9 do
+        if launch_state[engines_low[i]] then
+            launch(i)
+            launch_state[engines_low[i]] = false
+        end
     end
 end
 
