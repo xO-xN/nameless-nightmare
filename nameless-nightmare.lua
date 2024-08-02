@@ -1,11 +1,4 @@
-<<<<<<< HEAD
 -- Nameless Nightmare v1.0.0
-=======
--- Nameless Nightmare v0.8.2
--- Ambient sound generator
--- 
--- Inspired by Solar System
->>>>>>> 855a05fd2ec4b47a0d170e30a44a4da5666e3b1b
 --
 -- Granular Synthesizer
 -- Inspired by Solar System
@@ -13,7 +6,6 @@
 --            @xO-xN
 --
 --    ▼ instructions below ▼
-<<<<<<< HEAD
 -- 
 -- K1 (hold): Switch Load/Record
 -- K2: Load File / Record Input
@@ -24,22 +16,6 @@
 -- E3: Adjust Energy Level
 --
 -- Rec mode: Hold K2 to Record
-=======
--- K2: Load file / Record input
--- hold K1 to switch input mode
--- Record mode: hold K1 to rec
--- 
--- K3: Launch engine
--- E1: Select engine
--- E2: Select power source
--- E3: Adjust power level
---
---
---
--- 
--- Planet X do not make sound
--- What does it do?
->>>>>>> 855a05fd2ec4b47a0d170e30a44a4da5666e3b1b
 
 engine.name = 'Nameless_Nightmare'
 fileselect = require 'fileselect'
@@ -79,11 +55,8 @@ function load_file(file)
         engine.read(file)
         file_exists = 1
         reset_all_engines()
-<<<<<<< HEAD
 
         wait(1)
-=======
->>>>>>> 855a05fd2ec4b47a0d170e30a44a4da5666e3b1b
         print_info(file)
         redraw()
     end
