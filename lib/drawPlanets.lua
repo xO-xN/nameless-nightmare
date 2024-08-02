@@ -1,14 +1,24 @@
 -- Nameless Nightmare draw planets lib
 -- draw planets on norns' screen
 
--- v0.5.0 @xxiangcoding
+-- v1.0.0 @xO-xN
 
 
 local drawPlanets = {}
 
+drawPlanets.sun = function(self)
+    screen.aa(1)
+
+    screen.level(14-math.floor(self/20))
+    screen.circle(64, 32, 20+math.floor(self/5.5))
+    screen.fill()
+
+    screen.aa(0)
+end
+
 drawPlanets.mercury = function(self, vulcan)
     screen.aa(1)
-    screen.level(math.floor((self/100)*vulcan/12.5))
+    screen.level(math.floor((self/100)*vulcan/14))
     screen.circle(64-math.floor(vulcan/12.5), 32+math.floor(vulcan/33), 7+math.floor(vulcan/33))
     screen.fill()
 
@@ -84,7 +94,9 @@ drawPlanets.mars = function(self, phobos, deimos)
     screen.level(math.floor(self/6.8)-math.floor(deimos/6.8))
     screen.circle(58-((math.floor(deimos/50.1)*math.floor((deimos-50)/5))), 36, 3)
     screen.fill()
-
+    screen.level(math.floor(self/6.8)+math.floor(deimos/6.8))
+    screen.circle(58-((math.floor(deimos/50.1)*math.floor((deimos-50)/5))), 36, 3)
+    screen.stroke()
 
     screen.aa(0)
 end

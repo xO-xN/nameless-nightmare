@@ -1,7 +1,7 @@
 -- Nameless Nightmare Engine lib
 -- Engine params and functions
 
--- v0.5.0 @xxiangcoding
+-- v1.0.0 @xO-xN
 
 local ControlSpec = require "controlspec"
 
@@ -11,69 +11,103 @@ local specs = {}
 
 specs.amp = ControlSpec.new(0, 100, "lin", 0, 80)
 specs.power = ControlSpec.new(0, 100, "lin", 0, 0)
+specs.background = ControlSpec.new(-100, 100, "lin", 0, 0)
 
 NamelessNightmare.specs = specs
 
 function NamelessNightmare.add_params()
+    params:add_separator("Sun")
+    params:add{type = "control", id = "sun", name = "TimeFlow", controlspec = specs.background}
+    params:set_action("sun", function(value) engine.sun(value) focus(1,1) redraw() end)
 
     params:add_separator("Mercury")
-    params:add{type = "control", id = "mercury_self", name = "self", controlspec = specs.amp, action = engine.mercurySelfAmp}
-    params:add{type = "control", id = "vulcan_pow", name = "Vulcan", controlspec = specs.power, action = engine.mercuryVulcanPow}
+    params:add{type = "control", id = "mercury", name = "Mercury", controlspec = specs.amp}
+    params:set_action("mercury", function(value) engine.mercuryPrimary(value) focus(2,1) redraw() end)
+    params:add{type = "control", id = "vulcan", name = "Vulcan", controlspec = specs.power}
+    params:set_action("vulcan", function(value) engine.mercuryVulcan(value) focus(2,2) redraw() end)
 
     params:add_separator("Venus")
-    params:add{type = "control", id = "venus_self", name = "self", controlspec = specs.amp, action = engine.venusSelfAmp}
-    params:add{type = "control", id = "zoozve_pow", name = "Zoozve", controlspec = specs.power, action = engine.venusZoozvePow}
-
+    params:add{type = "control", id = "venus", name = "Venus", controlspec = specs.amp}
+    params:set_action("venus", function(value) engine.venusPrimary(value) focus(3,1) redraw() end)
+    params:add{type = "control", id = "zoozve", name = "Zoozve", controlspec = specs.power}
+    params:set_action("zoozve", function(value) engine.venusZoozve(value) focus(3,2) redraw() end)
+    
     params:add_separator("Earth")
-    params:add{type = "control", id = "earth_self", name = "self", controlspec = specs.amp, action = engine.earthSelfAmp}
-    params:add{type = "control", id = "moon_pow", name = "Moon", controlspec = specs.power, action = engine.earthMoonPow}
-    params:add{type = "control", id = "satellites_pow", name = "Satellites", controlspec = specs.power, action = engine.earthSatellitesPow}
+    params:add{type = "control", id = "earth", name = "Earth", controlspec = specs.amp}
+    params:set_action("earth", function(value) engine.earthPrimary(value) focus(4,1) redraw() end)
+    params:add{type = "control", id = "moon", name = "Moon", controlspec = specs.power}
+    params:set_action("moon", function(value) engine.earthMoon(value) focus(4,2) redraw() end)
+    params:add{type = "control", id = "satellites", name = "Satellites", controlspec = specs.power}
+    params:set_action("satellites", function(value) engine.earthSatellites(value) focus(4,3) redraw() end)
 
     params:add_separator("Mars")
-    params:add{type = "control", id = "mars_self", name = "self", controlspec = specs.amp, action = engine.marsSelfAmp}
-    params:add{type = "control", id = "phobos_pow", name = "Phobos", controlspec = specs.power, action = engine.marsPhobosPow}
-    params:add{type = "control", id = "deimos_pow", name = "Deimos", controlspec = specs.power, action = engine.marsDeimosPow}
-
-    params:add_separator("Jupiter")
-    params:add{type = "control", id = "jupiter_self", name = "self", controlspec = specs.amp, action = engine.jupiterSelfAmp}
-    params:add{type = "control", id = "moons_pow", name = "Moons", controlspec = specs.power, action = engine.jupiterMoonsPow}
-    params:add{type = "control", id = "jupiter_ring_pow", name = "Ring", controlspec = specs.power, action = engine.jupiterRingPow}
+    params:add{type = "control", id = "mars", name = "Mars", controlspec = specs.amp}
+    params:set_action("mars", function(value) engine.marsPrimary(value) focus(5,1) redraw() end)
+    params:add{type = "control", id = "phobos", name = "Phobos", controlspec = specs.power}
+    params:set_action("phobos", function(value) engine.marsPhobos(value) focus(5,2) redraw() end)
+    params:add{type = "control", id = "deimos", name = "Deimos", controlspec = specs.power}
+    params:set_action("deimos", function(value) engine.marsDeimos(value) focus(5,3) redraw() end)
     
+    params:add_separator("Jupiter")
+    params:add{type = "control", id = "jupiter", name = "Jupiter", controlspec = specs.amp}
+    params:set_action("jupiter", function(value) engine.jupiterPrimary(value) focus(6,1) redraw() end)
+    params:add{type = "control", id = "moons", name = "Moons", controlspec = specs.power}
+    params:set_action("moons", function(value) engine.jupiterMoons(value) focus(6,2) redraw() end)
+    params:add{type = "control", id = "jupiter_ring", name = "Ring", controlspec = specs.power}
+    params:set_action("jupiter_ring", function(value) engine.jupiterRing(value) focus(6,3) redraw() end)
+
     params:add_separator("Saturn")
-    params:add{type = "control", id = "saturn_self", name = "self", controlspec = specs.amp, action = engine.saturnSelfAmp}
-    params:add{type = "control", id = "mimas_pow", name = "Mimas", controlspec = specs.power, action = engine.saturnMimasPow}
-    params:add{type = "control", id = "rhea_pow", name = "Rhea", controlspec = specs.power, action = engine.saturnRheaPow}
-    params:add{type = "control", id = "titan_pow", name = "Titan", controlspec = specs.power, action = engine.saturnTitanPow}
-    params:add{type = "control", id = "saturn_ring_pow", name = "Ring", controlspec = specs.power, action = engine.saturnRingPow}
+    params:add{type = "control", id = "saturn", name = "Saturn", controlspec = specs.amp}
+    params:set_action("saturn", function(value) engine.saturnPrimary(value) focus(7,1) redraw() end)
+    params:add{type = "control", id = "mimas", name = "Mimas", controlspec = specs.power}
+    params:set_action("mimas", function(value) engine.saturnMimas(value) focus(7,2) redraw() end)
+    params:add{type = "control", id = "rhea", name = "Rhea", controlspec = specs.power}
+    params:set_action("rhea", function(value) engine.saturnRhea(value) focus(7,3) redraw() end)
+    params:add{type = "control", id = "titan", name = "Titan", controlspec = specs.power}
+    params:set_action("titan", function(value) engine.saturnTitan(value) focus(7,4) redraw() end)
+    params:add{type = "control", id = "saturn_ring", name = "Ring", controlspec = specs.power}
+    params:set_action("saturn_ring", function(value) engine.saturnRing(value) focus(7,5) redraw() end)
 
     params:add_separator("Uranus")
-    params:add{type = "control", id = "uranus_self", name = "self", controlspec = specs.amp, action = engine.uranusSelfAmp}
-    params:add{type = "control", id = "titania_pow", name = "Titania", controlspec = specs.power, action = engine.uranusTitaniaPow}
-    params:add{type = "control", id = "oberon_pow", name = "Oberon", controlspec = specs.power, action = engine.uranusOberonPow}
-    params:add{type = "control", id = "uranus_ring_pow", name = "Ring", controlspec = specs.power, action = engine.uranusRingPow}
+    params:add{type = "control", id = "uranus", name = "Uranus", controlspec = specs.amp}
+    params:set_action("uranus", function(value) engine.uranusPrimary(value) focus(8,1) redraw() end)
+    params:add{type = "control", id = "titania", name = "Titania", controlspec = specs.power}
+    params:set_action("titania", function(value) engine.uranusTitania(value) focus(8,2) redraw() end)
+    params:add{type = "control", id = "oberon", name = "Oberon", controlspec = specs.power}
+    params:set_action("oberon", function(value) engine.uranusOberon(value) focus(8,3) redraw() end)
+    params:add{type = "control", id = "uranus_ring", name = "Ring", controlspec = specs.power}
+    params:set_action("uranus_ring", function(value) engine.uranusRing(value) focus(8,4) redraw() end)
 
     params:add_separator("Neptune")
-    params:add{type = "control", id = "neptune_self", name = "self", controlspec = specs.amp, action = engine.neptuneSelfAmp}
-    params:add{type = "control", id = "triton_pow", name = "Triton", controlspec = specs.power, action = engine.neptuneTritonPow}
-    params:add{type = "control", id = "nereid_pow", name = "Nereid", controlspec = specs.power, action = engine.neptuneNereidPow}
-    params:add{type = "control", id = "pluto_pow", name = "Pluto", controlspec = specs.power, action = engine.neptunePlutoPow}
-    params:add{type = "control", id = "orcus_pow", name = "Orcus", controlspec = specs.power, action = engine.neptuneOrcusPow}
-    params:add{type = "control", id = "neptune_ring_pow", name = "Ring", controlspec = specs.power, action = engine.neptuneRingPow}
+    params:add{type = "control", id = "neptune", name = "Neptune", controlspec = specs.amp}
+    params:set_action("neptune", function(value) engine.neptunePrimary(value) focus(9,1) redraw() end)
+    params:add{type = "control", id = "triton", name = "Triton", controlspec = specs.power}
+    params:set_action("triton", function(value) engine.neptuneTriton(value) focus(9,2) redraw() end)
+    params:add{type = "control", id = "nereid", name = "Nereid", controlspec = specs.power}
+    params:set_action("nereid", function(value) engine.neptuneNereid(value) focus(9,3) redraw() end)
+    params:add{type = "control", id = "pluto", name = "Pluto", controlspec = specs.power}
+    params:set_action("pluto", function(value) engine.neptunePluto(value) focus(9,4) redraw() end)
+    params:add{type = "control", id = "orcus", name = "Orcus", controlspec = specs.power}
+    params:set_action("orcus", function(value) engine.neptuneOrcus(value) focus(9,5) redraw() end)
+    params:add{type = "control", id = "neptune_ring", name = "Ring", controlspec = specs.power}
+    params:set_action("neptune_ring", function(value) engine.neptuneRing(value) focus(9,6) redraw() end)
 
     params:add_separator("PlanetX")
-    params:add{type = "control", id = "planetx_self", name = "X", controlspec = specs.power, action = engine.xPow}
+    params:add{type = "control", id = "planetx", name = "X", controlspec = specs.background}
+    params:set_action("planetx", function(value) engine.planetX(value) focus(10,1) redraw() end)
 end
 
-NamelessNightmare.mercury = {"self", "Vulcan"}
-NamelessNightmare.venus = {"self", "Zoozve"}
-NamelessNightmare.earth = {"self", "Moon", "Satellites"}
-NamelessNightmare.mars = {"self", "Phobos", "Deimos"} 
-NamelessNightmare.jupiter = {"self", "Moons", "Ring"}
-NamelessNightmare.saturn = {"self", "Mimas", "Rhea", "Titan", "Ring"}
-NamelessNightmare.uranus = {"self", "Titania", "Oberon", "Ring"}
-NamelessNightmare.neptune = {"self", "Triton", "Nereid", "Pluto", "Orcus", "Ring"}
+NamelessNightmare.sun = {"TimeFlow"}
+NamelessNightmare.mercury = {"Primary", "Vulcan"}
+NamelessNightmare.venus = {"Primary", "Zoozve"}
+NamelessNightmare.earth = {"Primary", "Moon", "Satellites"}
+NamelessNightmare.mars = {"Primary", "Phobos", "Deimos"} 
+NamelessNightmare.jupiter = {"Primary", "Moons", "Ring"}
+NamelessNightmare.saturn = {"Primary", "Mimas", "Rhea", "Titan", "Ring"}
+NamelessNightmare.uranus = {"Primary", "Titania", "Oberon", "Ring"}
+NamelessNightmare.neptune = {"Primary", "Triton", "Nereid", "Pluto", "Orcus", "Ring"}
 NamelessNightmare.planetx = {"X"}
 
-NamelessNightmare.num_pow = {2, 2, 3, 3, 3, 5, 4, 6, 1}
+NamelessNightmare.num_pow = {1, 2, 2, 3, 3, 3, 5, 4, 6, 1}
 
 return NamelessNightmare
