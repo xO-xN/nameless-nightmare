@@ -68,13 +68,13 @@ Engine_Nameless_Nightmare : CroneEngine {
 				context.server.sampleRate * 1,
 		);
 
-			gEnv1 = Env([0, 1, 0.2, 0], [0.5, 0.5, 2.5], [-5, 2, -2]);
-			gEnv2 = Env([0, 1, 0], [0.3, 0.1], [2, 8]);
-			gEnv3 = Env([0, 1, 0.2, 0], [0.01, 0.3, 0.15], [2, 6, -8]);
-			gEnv4 = Env([0, 0.2, 0, 1, 0], [0.01, 0.05, 0.15, 0.2], [5, -5, -3, 3]);
-			gEnv5 = Env([0, 1, 0], [1, 1], [12, -8]);
-			gEnv6 = Env([0, 0.7, 0.1, 1, 0], [0.01, 0.4, 0.4, 0.01], [-2, -12, 12 ,2]);
-			gEnv7 = Env([0, 1, 0], [1, 2], [-2, -5]);
+			gEnv1 = Env([0, 0.8, 0.2, 0], [0.5, 0.5, 2], [-1, -2, -1]);
+			gEnv2 = Env([0, 0.8, 0], [0.9, 0.3], [2, -2]);
+			gEnv3 = Env([0, 0.8, 0.6, 0], [0.3, 0.8, 0.3], [-8, 2, 2]);
+			gEnv4 = Env([0, 0.2, 0, 0.5, 0], [0.03, 0.04, 0.12, 0.18], [5, -5, -3, 3]);
+			gEnv5 = Env([0, 0.8, 0], [1, 1], [12, -8]);
+			gEnv6 = Env([0, 0.7, 0.1, 1, 0], [0.05, 0.6, 0.6, 0.05], [-2, -12, 12 ,2]);
+			gEnv7 = Env([0, 0.8, 0], [1, 2], [-2, -5]);
 			mercuryEnvBuf = Buffer.sendCollection(context.server, gEnv1.discretize, 1);
 			venusEnvBuf = Buffer.sendCollection(context.server, gEnv2.discretize, 1);
 			earthEnvBuf = Buffer.sendCollection(context.server, gEnv3.discretize, 1);
@@ -96,16 +96,16 @@ Engine_Nameless_Nightmare : CroneEngine {
 				[buf_l, buf_r],
 				[0.24 + SinOsc.ar(0.04 - (vulcan/300), 0, 0.01), 0.24 + SinOsc.ar(0.04, 0, 0.08)],
 				[0.2 + LFSaw.ar(0.04, 0, 0.15), 0.8 - Dust.ar(1.5+(vulcan/300), 0.15)],
-				3,
+				2,
 				[-1*vulcan/100, vulcan/100],
 				mercuryEnvBuf,
 				16,
 			);
 
 			sig = LeakDC.ar(sig);
-			sig = Splay.ar(sig);
-			sig = LPF.ar(sig, 800 + vulcan * 4);
 			sig = Splay.ar(sig, vulcan/100);
+
+			sig = LPF.ar(sig, 800 + vulcan * 4);
 
 			//sig = sig * 3.dbamp;
 			env = EnvGen.kr(Env.asr(2, 1, 4), gate: gate, doneAction: 2);
@@ -127,11 +127,11 @@ Engine_Nameless_Nightmare : CroneEngine {
 			sig = GrainBuf.ar(
 				3,
 				Impulse.ar(LFNoise1.kr(0.0679, 12* (1+(sun/100)), 48 * (1+(sun/100)))),
-				LFSaw.kr([0.16,0.07,0.15] + LFNoise1.kr(0.06, 0.24), [-1, -0.4, 0.8], 0.05*(venus/100), 0.051*(venus/100)),
+				LFSaw.kr([0.16,0.07,0.15] + LFNoise1.kr(0.06, 0.24), [-1, -0.4, 0.8], 0.06*(venus/100), 0.08*(venus/100)),
 				[buf_l, buf_r, buf_l],
 				[-1.5, -0.5, -2.25],
 				SinOsc.ar(0.00235, [0.34, 0.254, 0.635], 0.05, [0.33333, 0.66666, 0.75999]),
-				1,
+				2,
 				[LFNoise1.kr(0.2, 0.05, -0.5),LFNoise1.kr(0.2, 0.25),LFNoise1.kr(0.2, 0.45, 0.5)],
 				venusEnvBuf,
 				16,
@@ -172,11 +172,11 @@ Engine_Nameless_Nightmare : CroneEngine {
 			sig = GrainBuf.ar(
 				2,
 				Impulse.ar(50 * (1 + (sun/100))),
-				SinOsc.ar(0.00815 + (satellites*0.001), 0.499, 0.0023 * (earth/100), (0.0086 + (satellites*0.0005)) * (earth/100)),
+				SinOsc.ar(0.00815 + (satellites*0.001), 0.499, 0.0146 * (earth/100), (0.0446 + (satellites*0.0012)) * (earth/100)),
 				[buf_l, buf_r],
 				SinOsc.ar(0.00486, 0.254, 0.0125, 0.934),
 				[SinOsc.ar(0.0032 + LFNoise1.kr(0.02, 0.001), 0.2, 0.4, 0.5), SinOsc.ar(0.0034 + LFNoise1.kr(0.02, 0.001), 0.6pi, 0.3, 0.6)],
-				3,
+				2,
 				[0, earth_pan],
 				earthEnvBuf,
 				16
@@ -194,7 +194,7 @@ Engine_Nameless_Nightmare : CroneEngine {
 				[buf_r, buf_l],
 				SinOsc.ar(0.00486, 0.254, 0.0125, 1.934),
 				[SinOsc.ar((0.0032 + LFNoise1.kr(0.02, 0.001)), -1, 0.4, 0.5), SinOsc.ar((0.0034 + LFNoise1.kr(0.02, 0.001)), -pi, 0.3, 0.6)],
-				3,
+				2,
 				[0-earth_pan, 0],
 				earthEnvBuf,
 				16
@@ -294,7 +294,7 @@ Engine_Nameless_Nightmare : CroneEngine {
 			sig = (sig * env * (mars/100)) + (sig1 * env1 * phobos_amp) + (sig2 * env2 * deimos_amp);
 
 			//effect
-			sig = sig + LPF.ar(DelayC.ar(sig, 0.61, LFNoise0.ar(LFNoise1.kr(0.2, 0.8, 0.81), 0.3, 0.301)), 1000, 0.3*(1+(px/100))) + HPF.ar(DelayC.ar(sig, 1.21, LFPulse.ar(LFNoise0.ar([2, 2.1], 0.08, 0.2), 0.5, 0.01, 0.6*(mars/100), 0.601)), 1000, 0.5*(1+(px/100)));
+			sig = sig + LPF.ar(DelayC.ar(sig, 0.61, LFNoise0.ar(LFNoise1.kr(0.2, 0.8, 0.81), 0.3, 0.301)), 1000, 0.5*(1+(px/100))) + HPF.ar(DelayC.ar(sig, 1.21, LFPulse.ar(LFNoise0.ar([2, 2.1], 0.08, 0.2), 0.5, 0.01, 0.6*(mars/100), 0.601)), 1000, 0.7*(1+(px/100)));
 
 			sig = Limiter.ar(sig);
 			Out.ar(0, sig);

@@ -1,4 +1,4 @@
--- Nameless Nightmare v1.0.0
+-- Nameless Nightmare v1.0.1
 --
 -- Granular Synthesizer
 -- Inspired by Solar System
@@ -59,6 +59,16 @@ function load_file(file)
         wait(1)
         print_info(file)
         redraw()
+    else
+        if file_exists == 1 then
+            -- print("file loaded")
+            redraw()
+        else
+            file_exists = 0
+            print("cancel file loading")
+            redraw()
+        end
+        redraw()
     end
 end
 
@@ -117,15 +127,6 @@ end
 
 function reset_all_engines()
     for i = 1, 10 do
-        if launch_state[engines_low[i]] then
-            launch(i)
-            launch_state[engines_low[i]] = false
-        end
-    end
-end
-
-function reset_all_engines()
-    for i = 1, 9 do
         if launch_state[engines_low[i]] then
             launch(i)
             launch_state[engines_low[i]] = false
@@ -221,7 +222,6 @@ function key(n,z)
         end
     elseif n == 2 then
         -- load file OR recording sample
-        file_exists = 0
         if params:get('sample_mode') == 1 and z == 1 then
             selecting = true
             fileselect.enter(_path.dust,load_file)
